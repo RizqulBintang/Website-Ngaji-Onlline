@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>saw-it - Baca Al-Qur'an Online</title>
+    <meta name="description" content="Baca Al-Qur'an online dengan teks Arab, terjemahan Indonesia, pencarian surah, audio qari, dan fitur melanjutkan bacaan.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:title" content="saw-it - Baca Al-Qur'an Online">
+    <meta property="og:description" content="Baca Al-Qur'an online dengan teks Arab, terjemahan Indonesia, pencarian surah, audio qari, dan fitur melanjutkan bacaan.">
+    <script>
+        try {
+            const savedTheme = localStorage.getItem("darkMode");
+            const darkTheme = savedTheme === null
+                ? window.matchMedia("(prefers-color-scheme: dark)").matches
+                : savedTheme === "true";
+            document.documentElement.classList.toggle("dark-mode", darkTheme);
+        } catch (error) {
+            console.warn("Preferensi tema belum dapat dibaca sebelum halaman dirender:", error);
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+    <section id="welcome-screen" class="welcome-screen" aria-labelledby="welcome-title">
+        <div class="welcome-cursor-glow" aria-hidden="true"></div>
+        <div class="welcome-ornament" aria-hidden="true"></div>
+        <div class="welcome-card">
+            <img src="assets/images/logo.png" alt="" width="100" height="100">
+            <p class="welcome-eyebrow">Ruang tenang untuk mengaji</p>
+            <h1 id="welcome-title">Assalamu'alaikum</h1>
+            <p class="welcome-copy">Selamat datang di saw-it. Baca ayat demi ayat, dengarkan lantunan qari, atau nikmati keduanya dalam satu ruang.</p>
+            <p id="welcome-resume" class="welcome-resume" hidden></p>
+            <div class="welcome-actions">
+                <button id="welcome-start" class="primary-button" type="button">Mulai Membaca</button>
+                <button id="welcome-resume-button" class="secondary-button" type="button" hidden>Lanjutkan Aktivitas</button>
+            </div>
+            <p class="welcome-note">114 surah · Teks Arab dan terjemahan Indonesia</p>
+        </div>
+    </section>
+
+    <div id="quran-experience" class="quran-experience" hidden>
+    <header class="header" role="banner">
+        <button id="home-button" class="home-button" type="button" aria-label="Kembali ke halaman sambutan" title="Beranda">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m3 10 9-7 9 7"></path><path d="M5 9v12h14V9"></path><path d="M9 21v-7h6v7"></path>
+            </svg>
+            <span>Beranda</span>
+        </button>
+        <button id="floatingToolbarBtn" class="floating-toolbar-btn" type="button" aria-label="Buka Pengaturan Cepat" title="Pengaturan Cepat" aria-expanded="false">
+            <svg viewBox="0 0 24 24" class="floating-btn-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+            </svg>
+        </button>
+        <a href="./" class="logo-link" aria-label="Beranda">
+            <img src="assets/images/logo.png" alt="Logo saw-it" width="100" height="100">
+        </a>
+        <h1>Baca Al-Qur'an Online</h1>
+        <h2>Mengaji Dimana Saja dan Kapan Saja</h2>
+        <p>30 Juz • 114 Surah</p>
+    </header>
+
+    <main class="container">
+        <section class="featured-surah" aria-labelledby="featured-title">
+            <div class="section-heading">
+                <div>
+                    <p class="section-eyebrow">Jelajahi surah</p>
+                    <h2 id="featured-title">Mulai dari pilihan Anda</h2>
+                </div>
+            </div>
+            <div class="surah-search-wrapper">
+                <span class="search-icon-slot" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input
+                    type="text"
+                    id="surah-search"
+                    placeholder="Cari nama, arti, atau nomor surah..."
+                    autocomplete="off"
+                    aria-label="Cari surah"
+                    aria-autocomplete="list"
+                    aria-controls="surah-suggestions"
+                    aria-expanded="false"
+                >
+                <button id="search-clear-btn" class="search-clear-btn" type="button" aria-label="Hapus pencarian" title="Hapus">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <div id="surah-suggestions" class="surah-suggestions" role="listbox" aria-label="Saran surah" hidden></div>
+            </div>
+            <div id="surah-carousel" class="surah-carousel" tabindex="0" role="region" aria-label="Surah pilihan">
+                <button id="carousel-previous" class="carousel-control" type="button" aria-label="Surah sebelumnya">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <div id="carousel-track" class="carousel-track" aria-live="polite"></div>
+                <button id="carousel-next" class="carousel-control" type="button" aria-label="Surah berikutnya">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m9 18 6-6-6-6"></path>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <div class="controls-toolbar-container" id="controls-toolbar-container">
+            <div class="controls-toolbar" id="controls-toolbar">
+                <div class="toggles-group">
+                    <label class="toggle-item" for="autoplay-toggle">
+                        <span class="switch">
+                            <input type="checkbox" id="autoplay-toggle" checked aria-label="Toggle Autoplay">
+                            <span class="slider"></span>
+                        </span>
+                        <span class="toggle-label">Auto Play</span>
+                    </label>
+
+                    <label class="toggle-item" for="rememberToggle">
+                        <span class="switch">
+                            <input type="checkbox" id="rememberToggle" aria-label="Toggle Ingat Bacaan Terakhir">
+                            <span class="slider"></span>
+                        </span>
+                        <span class="toggle-label">Ingat bacaan terakhir</span>
+                    </label>
+                </div>
+
+                <div class="qari-group">
+                    <label for="global-qari-select" class="qari-label">
+                        <svg viewBox="0 0 24 24" class="qari-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="22"></line>
+                        </svg>
+                        <span>Qari:</span>
+                    </label>
+                    <select id="global-qari-select" class="qari-select" aria-label="Pilih Pembaca / Qari">
+                        <option value="05">Misyari Rasyid Al-Afasi</option>
+                        <option value="03" selected>Abdurrahman as-Sudais</option>
+                        <option value="01">Abdullah Al-Juhany</option>
+                        <option value="02">Abdul-Muhsin Al-Qasim</option>
+                        <option value="04">Ibrahim Al-Dossari</option>
+                        <option value="06">Yasser Al-Dosari</option>
+                    </select>
+                </div>
+
+                <div class="theme-group">
+                    <label class="dark-toggle" title="Ubah Mode Gelap / Terang">
+                        <input type="checkbox" id="dark-mode-toggle" aria-label="Toggle Mode Gelap">
+                        <span class="slider2">
+                            <svg class="icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                            </svg>
+                            <svg class="icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <line x1="12" y1="2" x2="12" y2="4"></line>
+                                <line x1="12" y1="20" x2="12" y2="22"></line>
+                                <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+                                <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+                                <line x1="2" y1="12" x2="4" y2="12"></line>
+                                <line x1="20" y1="12" x2="22" y2="12"></line>
+                                <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+                                <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+                            </svg>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <p id="data-status" class="visually-hidden" role="status" aria-live="polite"></p>
+    </main>
+    </div>
+    <aside id="audio-dock" class="audio-dock" aria-label="Pemutar audio" hidden>
+        <div class="audio-dock-track">
+            <span class="audio-dock-label">Sedang diputar</span>
+            <strong id="audio-dock-title">Pilih surah untuk mulai mendengarkan</strong>
+            <span id="audio-dock-subtitle">Audio tidak diputar otomatis</span>
+        </div>
+        <div class="audio-dock-controls">
+            <button id="audio-previous" type="button" aria-label="Putar sebelumnya" title="Sebelumnya">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zm3 7 11 7V5z"></path></svg>
+            </button>
+            <button id="audio-toggle" class="audio-toggle" type="button" aria-label="Putar audio" title="Putar audio">
+                <svg class="dock-play-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"></path></svg>
+                <svg class="dock-pause-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"></path></svg>
+            </button>
+            <button id="audio-next" type="button" aria-label="Putar berikutnya" title="Berikutnya">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z"></path></svg>
+            </button>
+        </div>
+        <label class="audio-dock-progress" for="audio-progress">
+            <span class="visually-hidden">Posisi audio</span>
+            <input id="audio-progress" type="range" min="0" max="100" value="0" aria-label="Posisi audio">
+        </label>
+    </aside>
+
+    <div id="surah-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title-heading" tabindex="-1">
+        <div class="modal-wrapper">
+            <button class="modal-close-frame" id="modal-close-btn" type="button" aria-label="Tutup Modal (Esc)" title="Tutup (Esc)">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                    <path d="M6 6L18 18M6 18L18 6" 
+                          stroke="currentColor" 
+                          stroke-width="2" 
+                          stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="modal-content">
+                <div class="modal-top-bar">
+                    <div id="modal-title"></div>
+                    <div class="modal-qari-group">
+                        <label for="modal-qari-select" class="qari-label">
+                            <svg viewBox="0 0 24 24" class="qari-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="22"></line>
+                            </svg>
+                            <span>Qari:</span>
+                        </label>
+                        <select id="modal-qari-select" class="qari-select" aria-label="Pilih Pembaca di Modal">
+                            <option value="05">Misyari Rasyid Al-Afasi</option>
+                            <option value="03" selected>Abdurrahman as-Sudais</option>
+                            <option value="01">Abdullah Al-Juhany</option>
+                            <option value="02">Abdul-Muhsin Al-Qasim</option>
+                            <option value="04">Ibrahim Al-Dossari</option>
+                            <option value="06">Yasser Al-Dosari</option>
+                        </select>
+                    </div>
+                    <label class="text-size-control modal-text-size-control" for="reader-text-size">
+                        Ukuran teks
+                        <input id="reader-text-size" type="range" min="22" max="40" step="1" value="28" aria-label="Ukuran teks Arab">
+                    </label>
+                </div>
+                <div id="modal-ayat"></div>
+                <div id="modal-nav" class="modal-nav"></div>
+            </div>
+        </div>     
+    </div>
+
+    <!-- Floating Controls Toolbar Panel & Button -->
+    <div id="floating-toolbar-panel" class="floating-toolbar-panel" role="region" aria-label="Pengaturan Cepat" aria-hidden="true">
+        <div class="floating-toolbar-header">
+            <span class="floating-toolbar-title">
+                <svg viewBox="0 0 24 24" class="floating-header-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                Pengaturan Cepat
+            </span>
+            <button class="floating-toolbar-close" id="floating-toolbar-close-btn" aria-label="Tutup Pengaturan Cepat" title="Tutup">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="floating-toolbar-body" id="floating-toolbar-body"></div>
+    </div>
+
+    <button id="scrollTopBtn" class="scroll-top-btn" type="button" aria-label="Kembali ke atas" title="Kembali ke atas">
+        <svg viewBox="0 0 24 24" class="arrow-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+        </svg>
+    </button>
+
+    <div id="resume-popup" class="resume-popup" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="resume-title" tabindex="-1">
+        <div class="resume-card">
+            <button class="resume-close" id="resume-close-btn" type="button" aria-label="Tutup" title="Tutup (Esc)">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="resume-header">
+                <div class="resume-icon-badge" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" class="resume-icon" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                        <path d="M6 6h10"></path>
+                        <path d="M6 10h10"></path>
+                        <path d="M6 14h6"></path>
+                    </svg>
+                </div>
+                <h3 id="resume-title">Bacaan Terakhir</h3>
+            </div>
+
+            <div class="resume-content">
+                <div id="resume-surah" class="resume-surah"></div>
+                <div id="resume-ayah" class="resume-ayah"></div>
+                <div class="resume-question">
+                    Apakah Anda mau lanjut baca?
+                </div>
+            </div>
+
+            <div class="resume-actions">
+                <button id="resume-yes" type="button">Lanjut Baca</button>
+                <button id="resume-no" type="button">Nanti</button>
+            </div>
+        </div>
+    </div>
+	
+	<div id="switch-popup" class="resume-popup" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="switch-title" tabindex="-1">
+		<div class="resume-card">
+            <button class="resume-close" id="switch-close-btn" type="button" aria-label="Tutup" title="Tutup (Esc)">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="resume-icon-badge warning-badge" aria-hidden="true">
+                <svg class="resume-icon warning-icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <h3 id="switch-title" style="margin: 8px 0; font-size: 18px;">Ganti Bacaan?</h3>
+			<div id="switch-text"></div>
+			<div class="resume-actions">
+				<button id="switch-yes" type="button">Ya, Buka Ini</button>
+				<button id="switch-last" type="button">Bacaan Terakhir</button>
+				<button id="switch-no" type="button">Batal</button>
+			</div>
+		</div>
+	</div>
+
+    <script src="assets/js/script.js" defer></script>
+</body>
+</html>
